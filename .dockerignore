@@ -1,0 +1,14 @@
+.git
+.gitignore
+
+
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+.DS_Store
+.vscode/
+Makefile
+go.sum
+
+README.md
