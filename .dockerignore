@@ -12,3 +12,5 @@ Makefile
 go.sum
 
 README.md
+
+*.env
