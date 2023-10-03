@@ -15,6 +15,7 @@ type Env struct {
 	Db             *Db
 	S3             *S3
 	Jwt            *Jwt
+	Google         *Google
 }
 
 func LoadConfig() *Env {
@@ -46,6 +47,10 @@ func LoadConfig() *Env {
 			AccessKeyID:     os.Getenv("OBJECTSTORAGE_ACCESSKEYID"),
 			AccessKeySecret: os.Getenv("OBJECTSTORAGE_SECRETACCESSKEY"),
 			Bucket:          os.Getenv("OBJECTSTORAGE_BUCKET"),
+		},
+		Google: &Google{
+			ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
+			ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
 		},
 	}
 	return Cfg
@@ -79,4 +84,9 @@ type S3 struct {
 
 type Jwt struct {
 	Secret string
+}
+
+type Google struct {
+	ClientID     string
+	ClientSecret string
 }

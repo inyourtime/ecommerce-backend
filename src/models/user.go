@@ -23,7 +23,7 @@ type User struct {
 	ID        primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	Provider  providerType       `json:"provider,omitempty" bson:"provider"`
 	Email     string             `json:"email,omitempty" bson:"email"`
-	Password  string             `json:"password,omitempty" bson:"password"`
+	Password  string             `json:"password,omitempty" bson:"password,omitempty"`
 	Firstname string             `json:"firstname,omitempty" bson:"firstname"`
 	Lastname  string             `json:"lastname,omitempty" bson:"lastname"`
 	Avatar    string             `json:"avater,omitempty" bson:"avater,omitempty"`
@@ -32,4 +32,20 @@ type User struct {
 	IsActive  bool               `json:"isActive,omitempty" bson:"isActive"`
 	CreatedAt time.Time          `json:"createdAt,omitempty" bson:"createdAt"`
 	UpdatedAt time.Time          `json:"updatedAt,omitempty" bson:"updatedAt"`
+}
+
+func NewUser(user User) User {
+	return User{
+		Provider: user.Provider,
+		Email: user.Email,
+		Password: user.Password,
+		Firstname: user.Firstname,
+		Lastname: user.Lastname,
+		Avatar: user.Avatar,
+		GoogleID: user.GoogleID,
+		Role: UserRole,
+		IsActive: true,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
 }
