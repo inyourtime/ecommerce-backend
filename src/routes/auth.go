@@ -4,6 +4,7 @@ import (
 	"ecommerce-backend/src/configs"
 	"ecommerce-backend/src/db"
 	"ecommerce-backend/src/handlers"
+	"ecommerce-backend/src/middlewares"
 	"ecommerce-backend/src/models"
 	"ecommerce-backend/src/repositories"
 	"ecommerce-backend/src/services"
@@ -19,8 +20,10 @@ func AuthRoute(route fiber.Router) {
 	authHandler := handlers.NewAuthHandler(userService)
 
 	route.Post("/register", authHandler.Register)
-
 	route.Post("/login", authHandler.Login)
+	route.Get("/check", middlewares.Authenticate(), func(c *fiber.Ctx) error {
+		return c.JSON("ok")
+	})
 
 	route.Get("/:provider", func(c *fiber.Ctx) error {
 		if gothUser, err := gf.CompleteUserAuth(c); err == nil {
