@@ -22,10 +22,10 @@ const (
 type User struct {
 	ID        primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	Provider  providerType       `json:"provider,omitempty" bson:"provider"`
-	Email     string             `json:"email,omitempty" bson:"email"`
-	Password  string             `json:"password,omitempty" bson:"password,omitempty"`
-	Firstname string             `json:"firstname,omitempty" bson:"firstname"`
-	Lastname  string             `json:"lastname,omitempty" bson:"lastname"`
+	Email     string             `json:"email,omitempty" bson:"email" validate:"required,email"`
+	Password  string             `json:"password,omitempty" bson:"password,omitempty" validate:"required"`
+	Firstname string             `json:"firstname,omitempty" bson:"firstname" validate:"required"`
+	Lastname  string             `json:"lastname,omitempty" bson:"lastname" validate:"required"`
 	Avatar    string             `json:"avater,omitempty" bson:"avater,omitempty"`
 	Role      roleType           `json:"role,omitempty" bson:"role"`
 	GoogleID  string             `json:"googleID,omitempty" bson:"googleId,omitempty"`

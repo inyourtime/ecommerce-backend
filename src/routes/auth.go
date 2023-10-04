@@ -3,8 +3,10 @@ package routes
 import (
 	"ecommerce-backend/src/configs"
 	"ecommerce-backend/src/db"
+	"ecommerce-backend/src/handlers"
 	"ecommerce-backend/src/models"
 	"ecommerce-backend/src/repositories"
+	"ecommerce-backend/src/services"
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
@@ -13,10 +15,12 @@ import (
 
 func AuthRoute(route fiber.Router) {
 	userRepo := repositories.NewUserRepository(db.GetCollection(configs.Cfg, db.DB, "users"))
-	route.Get("/login", func(c *fiber.Ctx) error {
-		user, _ := userRepo.FindByEmail("go22@go.com")
-		return c.JSON(user)
-	})
+	userService := services.NewUserService(userRepo)
+	authHandler := handlers.NewAuthHandler(userService)
+
+	route.Post("/register", authHandler.Register)
+
+	route.Post("/login", authHandler.Login)
 
 	route.Get("/:provider", func(c *fiber.Ctx) error {
 		if gothUser, err := gf.CompleteUserAuth(c); err == nil {

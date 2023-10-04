@@ -3,8 +3,9 @@ package main
 import (
 	"ecommerce-backend/src/configs"
 	"ecommerce-backend/src/db"
+	"ecommerce-backend/src/middlewares"
+	"ecommerce-backend/src/pkg"
 	"ecommerce-backend/src/routes"
-	"fmt"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
@@ -41,9 +42,12 @@ func main() {
 	app := fiber.New()
 	app.Use(cors.New())
 	app.Use(logger.New())
+	app.Use(middlewares.Recover())
 
-	fmt.Println(configs.Cfg.Google.ClientID)
-	fmt.Println(configs.Cfg.Google.ClientSecret)
+	app.Use(func(c *fiber.Ctx) error {
+		pkg.SetContext(c)
+		return c.Next()
+	})
 
 	setupRoutes(app)
 

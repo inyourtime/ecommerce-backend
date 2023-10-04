@@ -48,6 +48,9 @@ func LoadConfig() *Env {
 			AccessKeySecret: os.Getenv("OBJECTSTORAGE_SECRETACCESSKEY"),
 			Bucket:          os.Getenv("OBJECTSTORAGE_BUCKET"),
 		},
+		Jwt: &Jwt{
+			Secret: os.Getenv("JWT_SECRETKEY"),
+		},
 		Google: &Google{
 			ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
 			ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
