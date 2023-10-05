@@ -17,8 +17,8 @@ func SetContext(ctx *fiber.Ctx) {
 }
 
 func GetCtx() *ServerEnvironment {
-	defer func() {
-		sCtx = nil
-	}()
+	// defer func() {
+	// 	sCtx = nil
+	// }()
 	return sCtx
 }

@@ -43,7 +43,7 @@ func main() {
 	app.Use(cors.New())
 	app.Use(logger.New())
 	app.Use(middlewares.Recover())
-
+	
 	app.Use(func(c *fiber.Ctx) error {
 		pkg.SetContext(c)
 		return c.Next()

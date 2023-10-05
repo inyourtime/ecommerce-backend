@@ -2,6 +2,7 @@ package services
 
 import (
 	"ecommerce-backend/src/configs"
+	"ecommerce-backend/src/logs"
 	"ecommerce-backend/src/models"
 	"ecommerce-backend/src/repositories"
 	"ecommerce-backend/src/utils"
@@ -26,6 +27,7 @@ func (s userService) CreateUser(req models.User) (*models.User, error) {
 	// check exist
 	currentUser, err := s.userRepo.FindByEmail(req.Email, false)
 	if err != nil {
+		logs.Error(err)
 		return nil, err
 	}
 	if currentUser != nil {
@@ -34,6 +36,7 @@ func (s userService) CreateUser(req models.User) (*models.User, error) {
 	// hash password
 	hash, err := utils.Hash(req.Password)
 	if err != nil {
+		logs.Error(err)
 		return nil, err
 	}
 	req.Password = hash
@@ -41,6 +44,7 @@ func (s userService) CreateUser(req models.User) (*models.User, error) {
 	user := models.NewUser(req)
 	newUser, err := s.userRepo.Create(user)
 	if err != nil {
+		logs.Error(err)
 		return nil, err
 	}
 
@@ -50,6 +54,7 @@ func (s userService) CreateUser(req models.User) (*models.User, error) {
 func (s userService) LoginUser(req models.LoginUserDto) (*models.Token, error) {
 	currentUser, err := s.userRepo.FindByEmail(req.Email, true)
 	if err != nil {
+		logs.Error(err)
 		return nil, err
 	}
 	if currentUser == nil {
@@ -68,6 +73,7 @@ func (s userService) LoginUser(req models.LoginUserDto) (*models.Token, error) {
 	}
 	token, err := utils.Token(claims, configs.Cfg.Jwt.Secret)
 	if err != nil {
+		logs.Error(err)
 		return nil, err
 	}
 

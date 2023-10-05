@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"ecommerce-backend/src/logs"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
@@ -17,7 +18,7 @@ func Recover() fiber.Handler {
 					"code":    fiber.StatusInternalServerError,
 					"message": fiber.ErrInternalServerError.Message,
 				})
-				// logs.Error(r)
+				logs.Error(r)
 			}
 		}()
 		// Next is called to execute the actual route handler
