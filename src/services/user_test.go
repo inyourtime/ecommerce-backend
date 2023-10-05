@@ -145,7 +145,8 @@ func TestLogin(t *testing.T) {
 		userService := services.NewUserService(userRepo)
 		result, _ := userService.LoginUser(loginDtoMock)
 		// assert
-		assert.NotEmpty(t, result)
+		assert.NotEmpty(t, result.AccessToken)
+		assert.NotEmpty(t, result.RefreshToken)
 		assert.IsType(t, &models.Token{}, result)
 	})
 }

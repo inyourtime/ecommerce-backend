@@ -7,7 +7,7 @@ func InitConfigMock() {
 			Token: "QjQr2LewR9tqc-BFxjgPFFmyfPfhDe-HHRdvSDluu1rYzGaoTIwuJ70dJDDLko4Aycca",
 		},
 		Jwt: &Jwt{
-			Secret: "sdhdfhersdfdsa",
+			Secret: "secretkub",
 		},
 	}
 }
