@@ -26,30 +26,32 @@ var userCreateMock1 = models.User{
 	Lastname:  "asdas",
 }
 
-var userCreatedMock1 = models.NewUser(userCreateMock1)
+func getUserCreatedMock1() models.User {
+	u := models.NewUser(userCreateMock1)
+	u.ID = primitive.NewObjectID()
+	return u
+}
 
 func TestCreateUser(t *testing.T) {
 	t.Run("create success", func(t *testing.T) {
 		// mock
 		userRepo := repositories.NewUserRepositoryMock()
-		userCreatedMock1.ID = primitive.NewObjectID()
-		userCreatedMock1.Password = "dsfwdhuasjkdasdsakjdhak"
-		userRepo.On("Create").Return(&userCreatedMock1, nil)
+		m := getUserCreatedMock1()
+		userRepo.On("Create").Return(&m, nil)
 		userRepo.On("FindByEmail").Return(nil, nil)
 		// test
 		userService := services.NewUserService(userRepo)
 		result, _ := userService.CreateUser(userCreateMock1)
 		// assert
 		assert.NotEmpty(t, result)
-		assert.Equal(t, userCreatedMock1, *result)
+		assert.Equal(t, m, *result)
 	})
 
 	t.Run("email already exist", func(t *testing.T) {
 		// mock
 		userRepo := repositories.NewUserRepositoryMock()
-		userCreatedMock1.ID = primitive.NewObjectID()
-		userCreatedMock1.Password = "dsfwdhuasjkdasdsakjdhak"
-		userRepo.On("FindByEmail").Return(&userCreatedMock1, nil)
+		m := getUserCreatedMock1()
+		userRepo.On("FindByEmail").Return(&m, nil)
 		// test
 		userService := services.NewUserService(userRepo)
 		result, err := userService.CreateUser(userCreateMock1)
@@ -62,8 +64,6 @@ func TestCreateUser(t *testing.T) {
 	t.Run("repo: find by email error", func(t *testing.T) {
 		// mock
 		userRepo := repositories.NewUserRepositoryMock()
-		userCreatedMock1.ID = primitive.NewObjectID()
-		userCreatedMock1.Password = "dsfwdhuasjkdasdsakjdhak"
 		userRepo.On("FindByEmail").Return(nil, errors.New("repo error"))
 		// test
 		userService := services.NewUserService(userRepo)
@@ -76,8 +76,6 @@ func TestCreateUser(t *testing.T) {
 	t.Run("repo: create error", func(t *testing.T) {
 		// mock
 		userRepo := repositories.NewUserRepositoryMock()
-		userCreatedMock1.ID = primitive.NewObjectID()
-		userCreatedMock1.Password = "dsfwdhuasjkdasdsakjdhak"
 		userRepo.On("FindByEmail").Return(nil, nil)
 		userRepo.On("Create").Return(nil, errors.New("repo error"))
 		// test
@@ -90,19 +88,17 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestLogin(t *testing.T) {
+	loginDtoMock := models.LoginUserDto{
+		Email:    "boat@gmail.com",
+		Password: "1234",
+	}
 	t.Run("repo: find by email error", func(t *testing.T) {
 		// mock
-		loginDto := models.LoginUserDto{
-			Email:    "boat@gmail.com",
-			Password: "1234",
-		}
 		userRepo := repositories.NewUserRepositoryMock()
-		userCreatedMock1.ID = primitive.NewObjectID()
-		userCreatedMock1.Password = "dsfwdhuasjkdasdsakjdhak"
 		userRepo.On("FindByEmail").Return(nil, errors.New("repo error"))
 		// test
 		userService := services.NewUserService(userRepo)
-		result, err := userService.LoginUser(loginDto)
+		result, err := userService.LoginUser(loginDtoMock)
 		// assert
 		assert.Nil(t, result)
 		assert.Error(t, err)
@@ -110,17 +106,11 @@ func TestLogin(t *testing.T) {
 
 	t.Run("email not found", func(t *testing.T) {
 		// mock
-		loginDto := models.LoginUserDto{
-			Email:    "boat@gmail.com",
-			Password: "1234",
-		}
 		userRepo := repositories.NewUserRepositoryMock()
-		userCreatedMock1.ID = primitive.NewObjectID()
-		userCreatedMock1.Password = "dsfwdhuasjkdasdsakjdhak"
 		userRepo.On("FindByEmail").Return(nil, nil)
 		// test
 		userService := services.NewUserService(userRepo)
-		result, err := userService.LoginUser(loginDto)
+		result, err := userService.LoginUser(loginDtoMock)
 		// assert
 		assert.Nil(t, result)
 		assert.ErrorIs(t, err, err.(*fiber.Error))
@@ -129,17 +119,15 @@ func TestLogin(t *testing.T) {
 
 	t.Run("password incorrect", func(t *testing.T) {
 		// mock
-		loginDto := models.LoginUserDto{
-			Email:    "boat@gmail.com",
-			Password: "1234",
-		}
 		userRepo := repositories.NewUserRepositoryMock()
-		userCreatedMock1.ID = primitive.NewObjectID()
-		userCreatedMock1.Password = "dsfwdhuasjkdasdsakjdhak"
-		userRepo.On("FindByEmail").Return(&userCreatedMock1, nil)
+		m := getUserCreatedMock1()
+		m.Password = "nowayja"
+		hash, _ := utils.Hash(m.Password)
+		m.Password = hash
+		userRepo.On("FindByEmail").Return(&m, nil)
 		// test
 		userService := services.NewUserService(userRepo)
-		result, err := userService.LoginUser(loginDto)
+		result, err := userService.LoginUser(loginDtoMock)
 		// assert
 		assert.Nil(t, result)
 		assert.ErrorIs(t, err, err.(*fiber.Error))
@@ -148,19 +136,14 @@ func TestLogin(t *testing.T) {
 
 	t.Run("login success", func(t *testing.T) {
 		// mock
-		loginDto := models.LoginUserDto{
-			Email:    "boat@gmail.com",
-			Password: "1234",
-		}
 		userRepo := repositories.NewUserRepositoryMock()
-		userCreatedMock1.ID = primitive.NewObjectID()
-		userCreatedMock1.Password = "1234"
-		hash, _ := utils.Hash(userCreatedMock1.Password)
-		userCreatedMock1.Password = hash
-		userRepo.On("FindByEmail").Return(&userCreatedMock1, nil)
+		m := getUserCreatedMock1()
+		hash, _ := utils.Hash(m.Password)
+		m.Password = hash
+		userRepo.On("FindByEmail").Return(&m, nil)
 		// test
 		userService := services.NewUserService(userRepo)
-		result, _ := userService.LoginUser(loginDto)
+		result, _ := userService.LoginUser(loginDtoMock)
 		// assert
 		assert.NotEmpty(t, result)
 		assert.IsType(t, &models.Token{}, result)
