@@ -19,11 +19,13 @@ func TestWebHook(t *testing.T) {
 	validSyntaxText := `{"level":"error","timestamp":"2023-10-05T21:59:42.685+0700","caller":"services/user.go:34","msg":"testing"}`
 	notFoundID := "1159508574125428721"
 	invalidID := "asdkasklfjafasf"
+	incorrectToken := "yoyoyoyoyoyyoyooyo"
 	envMock := pkg.ServerEnvironment{
 		Hostname: "localhost:3333",
 		Url:      "/api/test",
 		Method:   "GET",
 	}
+	
 	t.Run("Unmarshal error", func(t *testing.T) {
 		err := pkg.WebhookSend(invalidSyntaxText, envMock)
 		assert.Error(t, err)
@@ -38,7 +40,7 @@ func TestWebHook(t *testing.T) {
 
 	t.Run("Send webhook fail: incorrect token", func(t *testing.T) {
 		// mock incorrect token
-		configs.Cfg.DiscordWebhook.Token = "yoyoyoyoyoyyoyooyo"
+		configs.Cfg.DiscordWebhook.Token = incorrectToken
 		err := pkg.WebhookSend(validSyntaxText, envMock)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, err.(*discordgo.RESTError))
