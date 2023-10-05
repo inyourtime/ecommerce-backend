@@ -3,7 +3,6 @@ package pkg
 import (
 	"ecommerce-backend/src/configs"
 	"encoding/json"
-	"log"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -21,11 +20,12 @@ type DiscordErrorLog struct {
 	Timestamp string `json:"timestamp"`
 }
 
-func WebhookSend(text string, ev ServerEnvironment) {
+func WebhookSend(text string, ev ServerEnvironment) error {
 	data := DiscordErrorLog{}
 
 	if err := json.Unmarshal([]byte(text), &data); err != nil {
-		panic(err)
+		// log.Printf("Discord webhook error: %v", err)
+		return err
 	}
 
 	emb := []*discordgo.MessageEmbed{
@@ -49,6 +49,8 @@ func WebhookSend(text string, ev ServerEnvironment) {
 
 	_, err := dc.WebhookExecute(configs.Cfg.DiscordWebhook.ID, configs.Cfg.DiscordWebhook.Token, false, hookMessage)
 	if err != nil {
-		log.Printf("Discord webhook error: %v", err)
+		// log.Printf("Discord webhook error: %v", err)
+		return err
 	}
+	return nil
 }
