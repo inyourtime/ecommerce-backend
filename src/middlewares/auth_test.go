@@ -46,6 +46,7 @@ func TestAuth(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.description, func(t *testing.T) {
 			app := setupApp()
+			defer app.Shutdown()
 			if c.auth {
 				app.Use(middlewares.Authenticate())
 			}

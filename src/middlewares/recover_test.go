@@ -13,6 +13,7 @@ import (
 func TestRecover(t *testing.T) {
 	t.Run("No panic", func(t *testing.T) {
 		app := fiber.New()
+		defer app.Shutdown()
 		app.Use(middlewares.Recover())
 		app.Get("/test", func(c *fiber.Ctx) error {
 			return c.SendStatus(200)
@@ -25,6 +26,7 @@ func TestRecover(t *testing.T) {
 
 	t.Run("Panic occurs", func(t *testing.T) {
 		app := fiber.New()
+		defer app.Shutdown()
 		app.Use(middlewares.Recover())
 		app.Get("/test", func(c *fiber.Ctx) error {
 			panic("test")
