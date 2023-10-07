@@ -14,7 +14,11 @@ func Authenticate() fiber.Handler {
 			return c.Next()
 		},
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
-			return fiber.ErrUnauthorized
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"code":        fiber.StatusUnauthorized,
+				"message":     fiber.ErrUnauthorized.Message,
+				"description": err.Error(),
+			})
 		},
 	})
 }

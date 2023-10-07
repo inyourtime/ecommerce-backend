@@ -150,3 +150,57 @@ func TestLogin(t *testing.T) {
 		assert.IsType(t, &models.Token{}, result)
 	})
 }
+
+func TestGetUserProfile(t *testing.T) {
+	t.Run("Get user profile success", func(t *testing.T) {
+		// mock
+		userRepo := repositories.NewUserRepositoryMock()
+		m := getUserCreatedMock1()
+		userRepo.On("FindByID").Return(&m, nil)
+		// test
+		userSvc := services.NewUserService(userRepo)
+		result, err := userSvc.GetProfile(m.ID.Hex())
+		assert.Nil(t, err)
+		assert.NotNil(t, result)
+		assert.Equal(t, m, *result)
+	})
+
+	t.Run("Get user profile repo error", func(t *testing.T) {
+		// mock
+		userRepo := repositories.NewUserRepositoryMock()
+		m := getUserCreatedMock1()
+		userRepo.On("FindByID").Return(nil, errors.New("repo err"))
+		// test
+		userSvc := services.NewUserService(userRepo)
+		result, err := userSvc.GetProfile(m.ID.Hex())
+		assert.Error(t, err)
+		assert.Nil(t, result)
+	})
+
+	t.Run("Get user profile user not found", func(t *testing.T) {
+		// mock
+		userRepo := repositories.NewUserRepositoryMock()
+		m := getUserCreatedMock1()
+		userRepo.On("FindByID").Return(nil, nil)
+		// test
+		userSvc := services.NewUserService(userRepo)
+		result, err := userSvc.GetProfile(m.ID.Hex())
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, err.(*fiber.Error))
+		assert.Equal(t, 404, err.(*fiber.Error).Code)
+		assert.Nil(t, result)
+	})
+
+	t.Run("Get user profile Bad id", func(t *testing.T) {
+		// mock
+		userRepo := repositories.NewUserRepositoryMock()
+		// test
+		userSvc := services.NewUserService(userRepo)
+		result, err := userSvc.GetProfile("invalidID")
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, err.(*fiber.Error))
+		assert.Equal(t, 400, err.(*fiber.Error).Code)
+		assert.Nil(t, result)
+	})
+
+}

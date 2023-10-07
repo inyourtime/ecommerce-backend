@@ -9,11 +9,13 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type UserService interface {
 	CreateUser(req models.User) (*models.User, error)
 	LoginUser(req models.LoginUserDto) (*models.Token, error)
+	GetProfile(_id string) (*models.User, error)
 }
 type userService struct {
 	userRepo repositories.UserRopository
@@ -78,4 +80,23 @@ func (s userService) LoginUser(req models.LoginUserDto) (*models.Token, error) {
 	}
 
 	return &token, nil
+}
+
+func (s userService) GetProfile(id string) (*models.User, error) {
+	// convert id string to ObjectId
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, fiber.NewError(fiber.StatusBadRequest, "Invalid object id")
+	}
+
+	currentUser, err := s.userRepo.FindByID(objectId, false)
+	if err != nil {
+		logs.Error(err)
+		return nil, err
+	}
+	if currentUser == nil {
+		return nil, fiber.ErrNotFound
+	}
+
+	return currentUser, nil
 }
