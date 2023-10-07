@@ -1,4 +1,4 @@
-package pkg
+package logs
 
 import (
 	"ecommerce-backend/src/configs"

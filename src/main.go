@@ -3,8 +3,8 @@ package main
 import (
 	"ecommerce-backend/src/configs"
 	"ecommerce-backend/src/db"
+	"ecommerce-backend/src/logs"
 	"ecommerce-backend/src/middlewares"
-	"ecommerce-backend/src/pkg"
 	"ecommerce-backend/src/routes"
 	"log"
 
@@ -39,13 +39,21 @@ func main() {
 		google.New(configs.Cfg.Google.ClientID, configs.Cfg.Google.ClientSecret, "http://localhost:5050/api/auth/google/callback"),
 	)
 
-	app := fiber.New()
-	app.Use(cors.New())
-	app.Use(logger.New())
+	app := fiber.New(fiber.Config{
+		RequestMethods: fiber.DefaultMethods,
+		ErrorHandler:   fiber.DefaultErrorHandler,
+	})
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+		AllowMethods: cors.ConfigDefault.AllowMethods,
+	}))
+	app.Use(logger.New(logger.Config{
+		TimeZone: "Asia/Bangkok",
+	}))
 	app.Use(middlewares.Recover())
-	
+
 	app.Use(func(c *fiber.Ctx) error {
-		pkg.SetContext(c)
+		logs.SetContext(c)
 		return c.Next()
 	})
 

@@ -56,7 +56,7 @@ func TestAuth(t *testing.T) {
 
 			req := httptest.NewRequest(http.MethodGet, "/test", nil)
 			if c.token != nil {
-				req.Header.Add("Authorization", "Bearer "+*c.token)
+				req.Header.Add(fiber.HeaderAuthorization, "Bearer "+*c.token)
 			}
 			res, err := app.Test(req)
 			assert.Equal(t, c.expectedErr, err)

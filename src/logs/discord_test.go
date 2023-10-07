@@ -1,8 +1,8 @@
-package pkg_test
+package logs_test
 
 import (
 	"ecommerce-backend/src/configs"
-	"ecommerce-backend/src/pkg"
+	"ecommerce-backend/src/logs"
 	"encoding/json"
 	"testing"
 
@@ -20,14 +20,14 @@ func TestWebHook(t *testing.T) {
 	notFoundID := "1159508574125428721"
 	invalidID := "asdkasklfjafasf"
 	incorrectToken := "yoyoyoyoyoyyoyooyo"
-	envMock := pkg.ServerEnvironment{
+	envMock := logs.ServerEnvironment{
 		Hostname: "localhost:3333",
 		Url:      "/api/test",
 		Method:   "GET",
 	}
-	
+
 	t.Run("Unmarshal error", func(t *testing.T) {
-		err := pkg.WebhookSend(invalidSyntaxText, envMock)
+		err := logs.WebhookSend(invalidSyntaxText, envMock)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, err.(*json.SyntaxError))
 	})
@@ -41,7 +41,7 @@ func TestWebHook(t *testing.T) {
 	t.Run("Send webhook fail: incorrect token", func(t *testing.T) {
 		// mock incorrect token
 		configs.Cfg.DiscordWebhook.Token = incorrectToken
-		err := pkg.WebhookSend(validSyntaxText, envMock)
+		err := logs.WebhookSend(validSyntaxText, envMock)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, err.(*discordgo.RESTError))
 		assert.Equal(t, 401, err.(*discordgo.RESTError).Response.StatusCode)
@@ -50,7 +50,7 @@ func TestWebHook(t *testing.T) {
 	t.Run("Send webhook fail: id not found", func(t *testing.T) {
 		// mock incorrect ID
 		configs.Cfg.DiscordWebhook.ID = notFoundID
-		err := pkg.WebhookSend(validSyntaxText, envMock)
+		err := logs.WebhookSend(validSyntaxText, envMock)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, err.(*discordgo.RESTError))
 		assert.Equal(t, 404, err.(*discordgo.RESTError).Response.StatusCode)
@@ -59,7 +59,7 @@ func TestWebHook(t *testing.T) {
 	t.Run("Send webhook fail: id invalid", func(t *testing.T) {
 		// mock incorrect ID
 		configs.Cfg.DiscordWebhook.ID = invalidID
-		err := pkg.WebhookSend(validSyntaxText, envMock)
+		err := logs.WebhookSend(validSyntaxText, envMock)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, err.(*discordgo.RESTError))
 		assert.Equal(t, 400, err.(*discordgo.RESTError).Response.StatusCode)

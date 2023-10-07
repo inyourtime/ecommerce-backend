@@ -1,8 +1,6 @@
 package logs
 
 import (
-	"ecommerce-backend/src/pkg"
-
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -50,14 +48,14 @@ func NewDiscordWriter() *DiscordWriter {
 
 func (w *DiscordWriter) Write(p []byte) (n int, err error) {
 	message := string(p)
-	c := pkg.GetCtx()
+	c := GetCtx()
 	if c != nil {
-		ev := pkg.ServerEnvironment{
+		ev := ServerEnvironment{
 			Hostname: c.Hostname,
 			Url:      c.Url,
 			Method:   c.Method,
 		}
-		go pkg.WebhookSend(message, ev)
+		go WebhookSend(message, ev)
 	}
 	return len(p), nil
 }

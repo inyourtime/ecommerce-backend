@@ -1,4 +1,4 @@
-package pkg
+package logs
 
 import (
 	"github.com/gofiber/fiber/v2"
