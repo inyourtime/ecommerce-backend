@@ -15,7 +15,6 @@ func UserRoute(route fiber.Router) {
 	userRepo := repositories.NewUserRepository(db.GetCollection(configs.Cfg, db.DB, "users"))
 	userService := services.NewUserService(userRepo)
 	userHandler := handlers.NewUserHandler(userService)
-	//
 
 	route.Get("/:id", middlewares.Authenticate(), userHandler.GetUserProfile)
 }
